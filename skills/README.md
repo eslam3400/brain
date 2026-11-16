@@ -1,8 +1,8 @@
 # skills/
 
 Agent skills: reusable instruction packs a coding agent loads on demand by ID.
-OpenCode discovers `.agents/skills/` natively; `scripts/install.sh` links this
-directory for agents that don't (e.g. Claude Code reads `.claude/skills/`).
+OpenCode discovers `.opencode/skills/` natively; `scripts/install.sh` links this
+directory into other agents (e.g. Claude Code reads `.claude/skills/`).
 
 ## What's inside
 
@@ -22,4 +22,4 @@ Each skill is a directory containing `SKILL.md` (frontmatter: `name`,
 - `README.md` files (this one) hold directory docs; they carry no `description`,
   so they register inertly and are never advertised to models.
 - Mirror command specs — `setup` skill just locates and hands off to
-  `.agents/commands/setup.md`; see root `AGENTS.md` for the sync rule.
+  `.opencode/commands/setup.md`; see root `AGENTS.md` for the sync rule.

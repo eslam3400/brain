@@ -68,10 +68,10 @@ between layers, generated code that must not be hand-edited.>
 
 ## Agent brain
 
-This project imports the agent brain at `.agents/`. When it pays to remember or
-plan (non-obvious learnings, operator preferences, multi-step work), write to:
+This project imports the agent brain at `.opencode/`. When it pays to remember
+or plan (non-obvious learnings, operator preferences, multi-step work), write to:
 
-- `.agents/memory/YYYY-MM-DD-<short-slug>.md` — durable facts and learnings.
-- `.agents/plans/<name>.md` — plans and roadmaps.
+- `.opencode/memory/YYYY-MM-DD-<short-slug>.md` — durable facts and learnings.
+- `.opencode/plans/<name>.md` — plans and roadmaps.
 
 Cease writing there if asked; secrets never go in these files.

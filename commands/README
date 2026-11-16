@@ -1,8 +1,8 @@
 # commands/
 
-Source of truth for slash commands. Files here are symlinked by
-`scripts/install.sh` into each agent's command directory (e.g.
-`.opencode/commands/` in OpenCode projects), so `/name` always resolves to the
+Source of truth for slash commands. OpenCode discovers this directory as
+`.opencode/commands/`; `scripts/install.sh` links it into other agents' command
+directories (e.g. `.claude/commands/`), so `/name` always resolves to the
 brain's content.
 
 ## What's inside
@@ -13,7 +13,7 @@ brain's content.
 
 Each `<name>.md` here becomes `/name` in connected agents. YAML frontmatter
 fields (`description`, `agent`, `model`) are agent-specific; keep bodies
-self-contained so they work when the brain is imported as `.agents/`.
+self-contained so they work when the brain is imported as `.opencode/`.
 
 ## Conventions
 
@@ -21,5 +21,6 @@ self-contained so they work when the brain is imported as `.agents/`.
 - `$ARGUMENTS` carries what the operator types after the command name.
 - Write paths as brain-relative with fallbacks (see root `AGENTS.md`).
 
-Note: `README.md` in this directory is documentation; rerunning
-`scripts/install.sh` in merge mode skips it so it never registers as a command.
+Note: this file is named `README` (without `.md`) because OpenCode registers
+every `.md` file here as a command; `README.md` would expose a `/README`
+command. `scripts/install.sh` also skips both forms when merging item-level.

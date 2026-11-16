@@ -12,7 +12,7 @@ The operator may pass extra arguments: treat them as hints or focus areas
 (e.g. `/setup focus on the API layer`, `/setup re-run build commands`).
 
 The agent brain lives in `commands/`'s parent directory: it is either this
-repo's root (standalone brain) or `.agents/` inside an importing project.
+repo's root (standalone brain) or `.opencode/` inside an importing project.
 
 ## Phase 1 — Read the repo (gather, don't question)
 
@@ -58,7 +58,7 @@ Good questions, pruned to what's actually unknown:
 ## Phase 3 — Write AGENTS.md
 
 Read the skeleton from the brain's `templates/AGENTS.md` (path is
-`<brain>/templates/AGENTS.md` — try `.agents/templates/AGENTS.md` and, as
+`<brain>/templates/AGENTS.md` — try `.opencode/templates/AGENTS.md` and, as
 fallback, `templates/AGENTS.md` relative to the current directory).
 
 If an `AGENTS.md` already exists, **merge**: keep any existing rules or operator

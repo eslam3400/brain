@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
-# Point coding agents at the brain with symlinks so .agents/ stays the single
-# source of truth.
+# Point non-OpenCode agents at the brain with symlinks so .opencode/ stays the
+# single source of truth. OpenCode needs no links: it reads .opencode/commands,
+# .opencode/skills, and .opencode/agents directly.
 #
-# Principle: add skills/commands only to the brain, never to .opencode/ or
-# .claude/ directly. Run this script once per project, and again whenever new
-# items are added below an agent's already-existing directory.
+# Principle: add skills/commands only to the brain, never to .claude/ or any
+# other agent directory directly. Run this script once per project, and again
+# whenever new items are added below an agent's already-existing directory.
 #
 # Linking strategy per <agent>/<dir>:
 # 1. Destination missing  -> symlink the whole brain directory. Everything you
@@ -12,21 +13,21 @@
 # 2. Destination exists   -> symlink each brain item into it instead, so agent
 #    -local content survives. Rerun this script after adding new brain items.
 # 3. Destination exists but is a plain file -> skipped with a warning.
-# Dirs an agent discovers natively under .agents/ (OpenCode reads .agents/skills
-# directly) are deliberately NOT linked, to avoid duplicate registrations.
+# OpenCode reads .opencode/* natively, so it is never linked to itself.
 #
 # All symlink targets are relative, so moved or cloned projects keep working.
 #
 # Usage, from the project root that owns the brain:
-#   .agents/scripts/install.sh                  # opencode (default)
-#   .agents/scripts/install.sh opencode claude  # several agents at once
+#   .opencode/scripts/install.sh                  # opencode: native, no links
+#   .opencode/scripts/install.sh claude           # links .claude/
+#   .opencode/scripts/install.sh opencode claude  # several agents at once
 set -eu
 
 BRAIN="$(cd "$(dirname "$0")/.." && pwd)"
 BRAIN_NAME="$(basename "$BRAIN")"
 AGENTS="${*:-opencode}"
 
-link_dir() { # $1 = agent dir pair "<agent-root>/<dir>", e.g. .opencode/commands
+link_dir() { # $1 = agent dir pair "<agent-root>/<dir>", e.g. .claude/commands
   dest="$1"
   name="$(basename "$dest")"
   mid="$(dirname "$dest")"
@@ -50,10 +51,12 @@ link_dir() { # $1 = agent dir pair "<agent-root>/<dir>", e.g. .opencode/commands
     printf '  merge    %s exists; linking brain items into it\n' "$dest"
     for item in "$src"/* "$src"/.[!.]*; do
       [ -e "$item" ] || continue
-      if [ "$(basename "$item")" = "README.md" ]; then
-        printf '  skip     %s (directory docs, not functional)\n' "$(basename "$item")"
-        continue
-      fi
+      case "$(basename "$item")" in
+        README|README.md)
+          printf '  skip     %s (directory docs, not functional)\n' "$(basename "$item")"
+          continue
+          ;;
+      esac
       item_rel="../../$BRAIN_NAME/$name/$(basename "$item")"
       if ln -sfn "$item_rel" "$dest/$(basename "$item")"; then
         printf '  ok       %s -> %s\n' \
@@ -74,12 +77,10 @@ link_dir() { # $1 = agent dir pair "<agent-root>/<dir>", e.g. .opencode/commands
 
 dirs_for() {
   case "$1" in
-    # skills and agents: OpenCode discovers .agents/skills itself; other trees
-    # (slash commands, file-based agents) are not read from .agents/.
-    # commands ::= .opencode/commands
-    # agents   ::= .opencode/agents
-    opencode) printf '.opencode/commands\n.opencode/agents\n' ;;
-    # Claude Code does not read the .agents tree at all.
+    # OpenCode reads .opencode/{commands,skills,agents} natively; there is
+    # nothing to link, and linking the brain to itself would recurse.
+    opencode) ;;
+    # Claude Code does not read the .opencode tree at all.
     claude) printf '.claude/commands\n.claude/skills\n' ;;
     *)
       printf 'install.sh: unknown agent "%s"\n(known: opencode, claude — extend dirs_for to add more)\n' "$1" >&2
@@ -90,13 +91,18 @@ dirs_for() {
 
 for agent in $AGENTS; do
   printf 'agent: %s\n' "$agent"
-  dirs_for "$agent" | while IFS= read -r dest; do
-    link_dir "$dest"
-  done
+  dirs="$(dirs_for "$agent")"
+  if [ -z "$dirs" ]; then
+    printf '  native   OpenCode discovers .opencode/commands, .opencode/skills, and .opencode/agents directly; nothing to link\n'
+  else
+    printf '%s\n' "$dirs" | while IFS= read -r dest; do
+      link_dir "$dest"
+    done
+  fi
   echo "  done"
 done
 
 echo
-echo "Done. OpenCode hot-reloads commands and agents; new skills are usable"
-echo "immediately. Rerun this script after adding content under an agent dir"
-echo "that already existed on disk (case 2 above)."
+echo "Done. OpenCode hot-reloads commands, agents, and skills from .opencode/."
+echo "Rerun this script after adding content under an adapter dir that already"
+echo "existed on disk (case 2 above)."

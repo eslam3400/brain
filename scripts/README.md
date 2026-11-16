@@ -7,13 +7,14 @@ dependencies; any binary an action needs (e.g. `git`) must exist on the host.
 
 | Script       | Purpose                                                                 |
 | ------------ | ----------------------------------------------------------------------- |
-| `install.sh` | Symlinks agent convention directories (`.opencode/commands`, `.opencode/agents`, `.claude/commands`, `.claude/skills`, ...) to the brain, so agent-facing layers always resolve brain content. Idempotent; run once per project. |
+| `install.sh` | Symlinks the brain into other agents' convention directories (`.claude/commands`, `.claude/skills`, ...). OpenCode needs no links: it reads `.opencode/commands`, `.opencode/skills`, and `.opencode/agents` directly. Idempotent; run once per project. |
 
-Usage, from the project root that owns `.agents/`:
+Usage, from the project root that owns `.opencode/`:
 
 ```sh
-.agents/scripts/install.sh                  # opencode (default)
-.agents/scripts/install.sh opencode claude  # several agents at once
+.opencode/scripts/install.sh                  # opencode: native, no links
+.opencode/scripts/install.sh claude           # links .claude/
+.opencode/scripts/install.sh opencode claude  # several agents at once
 ```
 
 ## Conventions
