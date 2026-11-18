@@ -9,7 +9,7 @@ directory into other agents (e.g. Claude Code reads `.claude/skills/`).
 | Skill                  | Description                                                                  |
 | ---------------------- | ---------------------------------------------------------------------------- |
 | `setup/`               | Interactive repo bootstrap — reads the repository, asks the operator questions, and generates or updates `AGENTS.md` |
-| `infisical-compose/`   | Wire a Compose project to Infisical with a machine identity and a Makefile so secrets are injected at run time, never written to `.env` |
+| `infisical/`           | Wire a project to Infisical with a machine identity and a two-command Makefile (`make up`, `make local`) so secrets are injected at run time, never written to `.env` |
 
 Each skill is a directory containing `SKILL.md` (frontmatter: `name`,
 `description`) plus supporting files. The skill ID equals the directory name.
