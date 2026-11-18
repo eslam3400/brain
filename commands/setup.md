@@ -76,7 +76,34 @@ Requirements for the output:
 - Anything the operator answered that is personal (not project-specific) goes to
   memory, not into `AGENTS.md`.
 
-## Phase 4 — Seed the brain
+## Phase 4 — Fan the shared `.env` out to sibling projects
+
+The operator keeps secret bootstrap values (Infisical machine identity, Compose
+defaults) in one `.env` at the brain root, and the brain sits in a directory
+whose siblings are the projects. Link that file instead of copying it, so an
+edit in the brain reaches every project immediately.
+
+Run the brain's linker:
+
+```sh
+<brain>/scripts/link-env.sh
+```
+
+- Each sibling **git repo** gets `.env -> ../<brain-name>/.env` (relative, so
+  the tree can be moved or cloned).
+- An existing `.env` is replaced — the brain file is the single source of
+  truth; a `.env` that is itself a directory is skipped and reported.
+- Directories without `.git` (loose folders, the brain itself) are left alone.
+- When the brain is imported as `.opencode/` or `.agents/`, the script detects
+  it, prints that the host project owns its `.env`, and does nothing. That is
+  expected — do not link across projects from there.
+- If the script is missing (older brain copy), perform the same symlink per
+  sibling git repo by hand.
+
+Report the script's counts (`linked`, `replaced`, `skipped`) as part of the
+setup summary.
+
+## Phase 5 — Seed the brain
 
 After writing `AGENTS.md`, ask (one final question):
 

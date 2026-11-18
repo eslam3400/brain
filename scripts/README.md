@@ -5,9 +5,10 @@ dependencies; any binary an action needs (e.g. `git`) must exist on the host.
 
 ## What's inside
 
-| Script       | Purpose                                                                 |
-| ------------ | ----------------------------------------------------------------------- |
-| `install.sh` | Symlinks the brain into other agents' convention directories (`.claude/commands`, `.claude/skills`, ...). OpenCode needs no links: it reads `.opencode/commands`, `.opencode/skills`, and `.opencode/agents` directly. Idempotent; run once per project. |
+| Script         | Purpose                                                                 |
+| -------------- | ----------------------------------------------------------------------- |
+| `install.sh`   | Symlinks the brain into other agents' convention directories (`.claude/commands`, `.claude/skills`, ...). OpenCode needs no links: it reads `.opencode/commands`, `.opencode/skills`, and `.opencode/agents` directly. Idempotent; run once per project. |
+| `link-env.sh`  | Links the brain's `.env` into every sibling git repo (`<project>/.env -> ../<brain>/.env`) so one file drives them all. Replaces existing `.env` files; no-op when the brain is imported as `.opencode/`. Also keeps the brain `.env` at mode `600`. |
 
 Usage, from the project root that owns `.opencode/`:
 
@@ -15,6 +16,12 @@ Usage, from the project root that owns `.opencode/`:
 .opencode/scripts/install.sh                  # opencode: native, no links
 .opencode/scripts/install.sh claude           # links .claude/
 .opencode/scripts/install.sh opencode claude  # several agents at once
+```
+
+Usage from the standalone brain, whose parent holds the projects:
+
+```sh
+brain/scripts/link-env.sh                     # /setup runs this for you
 ```
 
 ## Conventions
